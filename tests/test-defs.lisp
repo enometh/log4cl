@@ -72,8 +72,8 @@
 
 (defparameter *temp-dir*
   (or (can-create-file-p "/tmp")
-      (can-create-file-p (asdf::getenv "TEMP"))
-      (can-create-file-p (asdf::getenv "TMP"))
+      (can-create-file-p (user::getenv "TEMP"))
+      (can-create-file-p (user::getenv "TMP"))
       (can-create-file-p ".")))
 
 (defparameter *tests-dir*
