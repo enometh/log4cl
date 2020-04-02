@@ -612,21 +612,21 @@ to the first log statement"
            (xrefs (log4sly-eval `(log4sly:emacs-helper
                                  '(,@id :action :get-location)))))
       ;; Pasted from `slime-edit-definition-cont'
-      (destructuring-bind (1loc file-alist) (slime-analyze-xrefs xrefs)
+      (destructuring-bind (1loc file-alist) (sly-analyze-xrefs xrefs)
         (cond ((null xrefs) 
                (if name (error "No known definition for: %s (in %s)" name package)
                  (error "No definition found")))
               (1loc
-               (slime-push-definition-stack)
-               (slime-pop-to-location (slime-xref.location (car xrefs)) where)
+               (sly-push-definition-stack)
+               (sly-pop-to-location (sly-xref.location (car xrefs)) where)
                (let ((end (save-excursion (forward-sexp) (point))))
                  (when (re-search-forward "^[ \t]*\\((log:\\)" end t)
                    (goto-char (match-beginning 1)))))
-              ((slime-length= xrefs 1)  ; ((:error "..."))
-               (error "%s" (cadr (slime-xref.location (car xrefs)))))
+              ((sly-length= xrefs 1)  ; ((:error "..."))
+               (error "%s" (cadr (sly-xref.location (car xrefs)))))
               (t
-               (slime-push-definition-stack)
-               (slime-show-xrefs file-alist 'definition name
+               (sly-push-definition-stack)
+               (sly-xref--show-results file-alist 'definition name
                                  package)))))))
 
 (defvar log4sly-category-mouse-map (make-sparse-keymap))
@@ -640,15 +640,20 @@ to the first log statement"
 (defvar log4sly-category-level-properties)
 
 (setq log4sly-category-package-properties (list 'face 'log4sly-package-face
+						'font-lock-face 'log4sly-package-face
                                                'keymap log4sly-category-mouse-map
                                                'pointer 'hand) 
       log4sly-category-file-properties (list 'face 'log4sly-file-face
+					     'font-lock-face 'log4sly-file-face
                                             'keymap log4sly-category-mouse-map
                                             'pointer 'hand) 
       log4sly-category-function-properties (list 'face 'log4sly-function-face
+						 'font-lock-face 'log4sly-function-face
                                                 'keymap log4sly-category-mouse-map
                                                 'pointer 'hand)
-      log4sly-category-level-properties (list 'face 'log4sly-level-face))
+      log4sly-category-level-properties (list 'face 'log4sly-level-face
+					      'font-lock-face 'log4sly-level-face
+					      ))
 
 (defvar log4sly-log-level-regexp)
 (defvar log4sly-log-level-base-regexp)
@@ -688,6 +693,7 @@ to the first log statement"
         (if (not (eq 'sly-mrepl-output-face (get-text-property (point) 'face)))
             (goto-char (next-single-property-change (point) 'face nil end))
           (let ((next (next-single-property-change (point) 'face nil end))
+		(inhibit-read-only t)
                 (case-fold-search t))
             (while (re-search-forward log4sly-log-level-regexp next t)
               (let ((bol (line-beginning-position))
@@ -747,15 +753,19 @@ to the first log statement"
                     (add-text-properties level-beg level-end log4sly-category-level-properties)))))
             (goto-char next))))))) 
 
+(defun sly-output-buffer ()
+ (sly-mrepl--find-buffer (sly-current-connection)))
 
+(ad-unadvise 'sly-mrepl--insert-output)
 (eval-after-load 'sly-mrepl
-  '(defadvice slime-repl-emit (around highlight-logging-category activate compile)
-     (with-current-buffer (slime-output-buffer)
-       (if log4sly-mode 
-           (let ((start (marker-position slime-output-end)))
+  '(defadvice sly-mrepl--insert-output (around highlight-logging-category activate compile)
+     (if log4sly-mode
+	 (with-current-buffer (sly-output-buffer)
+	   (let* ((inhibit-read-only t)
+		  (start (marker-position sly-mrepl--output-mark))) ; slime-output-end
              (setq ad-return-value ad-do-it)
-             (log4sly-highlight-log-message start (marker-position slime-output-end)))
-         (setq ad-return-value ad-do-it)))))
+             (log4sly-highlight-log-message start (marker-position sly-mrepl--output-mark))))
+       (setq ad-return-value ad-do-it))))
 
 (defun log4sly-make-menubar-menu ()
   (let ((C '(log4sly-check-connection)))
