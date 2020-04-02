@@ -79,4 +79,33 @@
 
 
 
+(mk:defsystem :log4slime
+  :source-pathname *log4cl-source-dir*
+  :binary-pathname *log4cl-binary-dir*
+  :source-extension "lisp"
+  :depends-on (#:log4cl #:swank)
+  :components ((:file "src/log4slime")))
 
+#+nil
+(mk:oos :log4slime :load :compile-during-load t)
+
+(mk:defsystem :log4sly
+   :source-pathname *log4cl-source-dir*
+   :binary-pathname *log4cl-binary-dir*
+   :source-extension "lisp"
+  :depends-on (#:log4cl #:slynk)
+  :components ((:file "src/log4sly")))
+
+#+nil
+(mk:oos :log4sly :load :compile-during-load t)
+
+(mk:defsystem :log4cl-examples
+   :source-pathname *log4cl-source-dir*
+   :binary-pathname *log4cl-binary-dir*
+   :source-extension "lisp"
+  :depends-on (#:log4cl #:swank)
+  :components ((:file "examples/naming-examples")
+               (:file "examples/customize-log-expr")))
+
+#+nil
+(mk:oos :log4cl-examples :load :compile-during-load t)
