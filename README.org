@@ -434,7 +434,7 @@ statement from REPL and seeing output colorized.
   - Standard log level =10=TRACE=
   - Extra debug level =11..15= named =DEBU5= through =DEBU9=
 
-<<effective>>
+<<effective log level>>
 ** Effective log level
    Effective log level of the logger *X* is determined as follows.
 
