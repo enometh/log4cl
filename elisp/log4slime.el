@@ -1,4 +1,4 @@
-;;; -*- Mode: Emacs-Lisp; -*-
+;;; -*- Mode: Emacs-Lisp; lexical-binding: nil; -*-
 ;;;
 ;;; Copyright (c) 2012, Max Mikhanosha. All rights reserved.
 ;;;
@@ -745,7 +745,7 @@ to the first log statement"
                     (add-text-properties level-beg level-end log4slime-category-level-properties)))))
             (goto-char next))))))) 
 
-
+(ad-unadvise 'slime-repl-edit)
 (eval-after-load 'slime-repl
   '(defadvice slime-repl-emit (around highlight-logging-category activate compile)
      (with-current-buffer (slime-output-buffer)

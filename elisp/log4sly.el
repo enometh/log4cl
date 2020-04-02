@@ -1,4 +1,4 @@
-;;; -*- Mode: Emacs-Lisp; -*-
+;;; -*- Mode: Emacs-Lisp; lexical-binding: nil; -*-
 ;;;
 ;;; Copyright (c) 2012, Max Mikhanosha. All rights reserved.
 ;;;
