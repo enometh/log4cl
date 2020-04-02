@@ -1217,10 +1217,10 @@ menu, by customizing `log4sly-menu-levels' variable`
                 ;; Make menu prettier by upcasing keys like [D]: Debug 
                 ;; but disable if there are both cases of same char
                 (setq case1 (log4sly-keys-case-sensitive-p level-keys))
-                (log-expr case1 choices)
+                ;; (log-expr case1 choices)
                 (setq choices
                       (loop for (key . level) in choices 
-                            do (log-expr key level)
+                            ;; do (log-expr key level)
                             collect
                             (list 
                              (format "[%c]:" (log4sly-case key case1)) 
