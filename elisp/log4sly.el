@@ -843,7 +843,8 @@ to the first log statement"
                                      (ok err)
                                      (cl:ignore-errors 
                                       (cl:setf (cl:get :log4sly :no-emacs-startup-message) t)
-                                      (cl:require 'log4sly))
+                                      (cl:require 'log4sly)
+				      t)
                                      (cl:if ok :ok (cl:princ-to-string err)))))) 
                      ;; (log-expr result)
                      (if (not (eq :ok result))
