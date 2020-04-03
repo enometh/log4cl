@@ -679,6 +679,7 @@ to the first log statement"
 (setq log4slime-enabled t)
 
 (defun log4slime-highlight-log-message (start end)
+  (interactive (list (mark) (point)))
   (when log4slime-enabled
     (save-excursion
       (goto-char start)

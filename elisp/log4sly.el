@@ -686,6 +686,7 @@ to the first log statement"
 (setq log4sly-enabled t)
 
 (defun log4sly-highlight-log-message (start end)
+  (interactive (list (mark) (point)))
   (when log4sly-enabled
     (save-excursion
       (goto-char start)
