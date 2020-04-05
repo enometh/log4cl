@@ -28,6 +28,7 @@
                               (:file "appender-base")
                               (:file "hierarchy-base")
                               (:file "hierarchy")
+			      (:file "trunc")
                               (:file "logger")
                               (:file "logging-macros")
                               (:file "self-logger")
