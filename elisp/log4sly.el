@@ -688,6 +688,7 @@ to the first log statement"
 (defun log4sly-highlight-log-message (start end)
   (interactive (list (mark) (point)))
   (when log4sly-enabled
+    (let ((inhibit-read-only t))
     (save-excursion
       (goto-char start)
       (while (< (point) end)
@@ -742,7 +743,7 @@ to the first log statement"
                 ;;   (rotatef pkg-end file-end))
                 (setq last-point (point))
                 (goto-char lim)
-                (when (and rest-beg pkg-beg) 
+                (when (or file-beg pkg-beg rest-beg level-beg) 
                   (remove-text-properties bol last-point '(face nil))
                   (when file-beg 
                     (add-text-properties file-beg file-end log4sly-category-file-properties))
@@ -752,7 +753,7 @@ to the first log statement"
                     (add-text-properties rest-beg rest-end log4sly-category-function-properties))
                   (when level-beg
                     (add-text-properties level-beg level-end log4sly-category-level-properties)))))
-            (goto-char next))))))) 
+            (goto-char next))))))))
 
 (defun sly-output-buffer ()
  (sly-mrepl--find-buffer (sly-current-connection)))

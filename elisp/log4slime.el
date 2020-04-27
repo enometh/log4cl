@@ -681,6 +681,7 @@ to the first log statement"
 (defun log4slime-highlight-log-message (start end)
   (interactive (list (mark) (point)))
   (when log4slime-enabled
+    (let ((inhibit-read-only t))
     (save-excursion
       (goto-char start)
       (while (< (point) end)
@@ -734,7 +735,7 @@ to the first log statement"
                 ;;   (rotatef pkg-end file-end))
                 (setq last-point (point))
                 (goto-char lim)
-                (when (and rest-beg pkg-beg) 
+                (when (or file-beg pkg-beg rest-beg level-beg) 
                   (remove-text-properties bol last-point '(face nil))
                   (when file-beg 
                     (add-text-properties file-beg file-end log4slime-category-file-properties))
@@ -744,7 +745,7 @@ to the first log statement"
                     (add-text-properties rest-beg rest-end log4slime-category-function-properties))
                   (when level-beg
                     (add-text-properties level-beg level-end log4slime-category-level-properties)))))
-            (goto-char next))))))) 
+            (goto-char next)))))))) 
 
 (ad-unadvise 'slime-repl-edit)
 (eval-after-load 'slime-repl
