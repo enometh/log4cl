@@ -765,8 +765,11 @@ to the first log statement"
 	 (with-current-buffer (sly-output-buffer)
 	   (let* ((inhibit-read-only t)
 		  (start (marker-position sly-mrepl--output-mark))) ; slime-output-end
-             (setq ad-return-value ad-do-it)
-             (log4sly-highlight-log-message start (marker-position sly-mrepl--output-mark))))
+	     (condition-case err
+		 (progn
+		   (setq ad-return-value ad-do-it)
+		   (log4sly-highlight-log-message start (marker-position sly-mrepl--output-mark)))
+	       (error "sly-mrepl--insert-output: around %s" (error-message-string err)))))
        (setq ad-return-value ad-do-it))))
 
 (defun log4sly-make-menubar-menu ()
