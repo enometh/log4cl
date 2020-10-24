@@ -903,6 +903,8 @@ global instead of local to files with `log4sly-mode' active"
 
 (log4sly-redefine-menus)
 
+(define-globalized-minor-mode global-log4sly-mode log4sly-mode turn-on-log4sly-mode)
+
 (defun turn-on-log4sly-mode ()
   "Turn on `log4sly-mode' in the current buffer if appropriate"
   (interactive)
@@ -910,9 +912,6 @@ global instead of local to files with `log4sly-mode' active"
       (log4sly-mode 1)
     (when (interactive-p);madhu 200111 obsolete
       (message "This buffer does not support log4sly mode"))))
-
-(define-globalized-minor-mode global-log4sly-mode log4sly-mode turn-on-log4sly-mode)
-
 
 (defun log4sly-format-eff-level (info)
   "Format effective log level of a logger, marked with asterisk

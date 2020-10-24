@@ -888,6 +888,8 @@ global instead of local to files with `log4slime-mode' active"
 
 (log4slime-redefine-menus)
 
+(define-globalized-minor-mode global-log4slime-mode log4slime-mode turn-on-log4slime-mode)
+
 (defun turn-on-log4slime-mode ()
   "Turn on `log4slime-mode' in the current buffer if appropriate"
   (interactive)
@@ -895,9 +897,6 @@ global instead of local to files with `log4slime-mode' active"
       (log4slime-mode 1)
     (when (interactive-p)
       (message "This buffer does not support log4slime mode"))))
-
-(define-globalized-minor-mode global-log4slime-mode log4slime-mode turn-on-log4slime-mode)
-
 
 (defun log4slime-format-eff-level (info)
   "Format effective log level of a logger, marked with asterisk
