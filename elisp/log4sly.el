@@ -913,6 +913,85 @@ global instead of local to files with `log4sly-mode' active"
     (when (interactive-p);madhu 200111 obsolete
       (message "This buffer does not support log4sly mode"))))
 
+;;madhu 201126 sly background output
+;; (setq log4cl::*global-console* *standard-output*)
+(eval-after-load 'sly-background-output
+'(progn
+ (defun log4sly-background-output-callback ()
+  ;; called from write-string channel method with the current buffer
+  ;; set to background-output-buffer and the following special
+  ;; variables bound to the boundaries of the inserted-string
+  (let ((start sly-background-output-buffer-beg-pos)
+	(end sly-background-output-buffer-end-pos))
+    (when log4sly-enabled
+      (save-excursion
+	(goto-char start)
+	(while (< (point) end)
+	  (let ((next end)
+		(inhibit-read-only t)
+		(case-fold-search t))
+	    (while (re-search-forward log4sly-log-level-regexp next t)
+	      (let ((bol (line-beginning-position))
+		    (lim (min (line-beginning-position 2)
+			      next))
+		    (level-re-beg (match-beginning 0))
+		    (level-re-end (match-end 0))
+		    (level-beg (match-beginning 1))
+		    (level-end (match-end 1))
+		    time-beg time-end
+		    pkg-beg pkg-end
+		    file-beg file-end
+		    rest-beg rest-end
+		    last-point
+		    done)
+		(goto-char bol)
+		(while (not done)
+		  (skip-chars-forward " :/-" lim)
+		  (if (and (>= (point) level-re-beg)
+			   (< (point) level-re-end))
+		      (goto-char level-re-end)
+		    (cond ((and (not time-beg) (looking-at log4sly-timestamp-regexp))
+			   (setq time-beg (match-beginning 1))
+			   (setq time-end (match-end 1))
+			   (goto-char (match-end 0)))
+			  ((and (not file-beg) (looking-at log4sly-file-regexp))
+			   (setq file-beg (match-beginning 1))
+			   (setq file-end (match-end 1))
+			   (goto-char (match-end 0)))
+			  ((and (not pkg-beg) (looking-at log4sly-package-regexp))
+			   (setq pkg-beg (match-beginning 1))
+			   (setq pkg-end (match-end 1))
+			   (goto-char (match-end 0)))
+			  ((and (not rest-beg) (looking-at log4sly-rest-regexp))
+			   (setq rest-beg (match-beginning 1))
+			   (setq rest-end (match-end 1))
+			   (goto-char (match-end 0)))
+			  (t (setq done t)))))
+		;; (when (and pkg-beg file-beg
+		;;            (save-excursion
+		;;              (goto-char (max bol (- file-end 5)))
+		;;              (looking-at "\\.lisp")))
+		;;   ;; swap package and file
+		;;   (rotatef pkg-beg file-beg)
+		;;   (rotatef pkg-end file-end))
+		(setq last-point (point))
+		(goto-char lim)
+		(when (or file-beg pkg-beg rest-beg level-beg)
+		  (remove-text-properties bol last-point '(face nil))
+		  (when file-beg
+		    (add-text-properties file-beg file-end log4sly-category-file-properties))
+		  (when pkg-beg
+		    (add-text-properties pkg-beg pkg-end log4sly-category-package-properties))
+		  (when rest-beg
+		    (add-text-properties rest-beg rest-end log4sly-category-function-properties))
+		  (when level-beg
+		    (add-text-properties level-beg level-end log4sly-category-level-properties)))))
+	    (goto-char next)))))))
+ 
+ (add-hook 'sly-background-output-write-string-hooks
+	   'log4sly-background-output-callback)))
+
+
 (defun log4sly-format-eff-level (info)
   "Format effective log level of a logger, marked with asterisk
 if its inherited from parent, and apply font property"
