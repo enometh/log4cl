@@ -843,6 +843,7 @@ to the first log statement"
                                      (ok err)
                                      (cl:ignore-errors 
                                       (cl:setf (cl:get :log4slime :no-emacs-startup-message) t)
+				      (cl:require 'log4cl)
                                       (cl:require :log4slime)
 				      t)
                                      (cl:if ok :ok (cl:princ-to-string err)))))) 
