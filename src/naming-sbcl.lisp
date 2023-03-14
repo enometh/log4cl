@@ -105,7 +105,7 @@ return \(FOOBAR FOO\)"
             (loop
               with last = nil
               as lambda = (sb-c::lexenv-lambda env)
-              then (sb-c::lambda-parent lambda)
+              then (sb-c::lexenv-lambda (sb-c::lambda-lexenv lambda))
               while lambda
               as debug-name = (include-block-debug-name? (sb-c::leaf-debug-name lambda))
               if (and debug-name (not (eq last debug-name)))
